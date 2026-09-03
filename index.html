@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh‑CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>光芯片 · 前沿光电科技</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft Yahei",sans-serif;}
+        html{scroll-behavior: smooth;}
+        body{background:#050718;color:#fff;overflow-x:hidden;}
+        /* 顶部导航栏 */
+        .header-nav{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            z-index: 1000;
+            background:rgba(5,7,24,0.75);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 229, 255, 0.15);
+        }
+        .nav-inner{
+            max-width: 1200px;
+            margin: 0 auto;
+            display:flex;
+            justify-content: flex-end;
+            gap:45px;
+            padding: 22px 30px;
+        }
+        .nav-inner a{
+            color:#c5d0ff;
+            text-decoration: none;
+            font-size:17px;
+            position:relative;
+            transition: all 0.4s ease;
+        }
+        /* 鼠标悬浮酷炫流光下划线 */
+        .nav-inner a::after{
+            content:"";
+            position:absolute;
+            left:0;
+            bottom:-6px;
+            width:0;
+            height:2px;
+            background:linear-gradient(90deg,#00e5ff,#b36bff);
+            transition: width 0.4s ease;
+        }
+        .nav-inner a:hover{
+            color:#00e5ff;
+            text-shadow: 0 0 12px rgba(0, 229, 255, 0.6);
+        }
+        .nav-inner a:hover::after{
+            width:100%;
+        }
+        /* 当前激活菜单高亮 */
+        .nav-inner a.active-top{
+            color:#00e5ff;
+            text-shadow: 0 0 14px rgba(0, 229, 255, 0.7);
+        }
+        .nav-inner a.active-top::after{
+            width:100%;
+        }
+        /* 粒子画布背景 */
+        #particles-canvas{
+            position:fixed;
+            top:0;left:0;
+            width:100vw;height:100vh;
+            z-index:-1;
+        }
+        /* 右侧悬浮导航 */
+        .right-nav{
+            position:fixed;
+            right:40px;
+            top:50%;
+            transform:translateY(-50%);
+            z-index: 999;
+            display:flex;
+            flex-direction:column;
+            gap:24px;
+        }
+        .nav-dot{
+            width:14px;height:14px;
+            border-radius:50%;
+            border: 2px solid #40e0ff;
+            background:transparent;
+            cursor:pointer;
+            transition: 0.3s ease;
+        }
+        .nav-dot.active{
+            background:#00e5ff;
+            box-shadow: 0 0 16px #00e5ff;
+            transform:scale(1.3);
+        }
+        /* 全屏板块样式 */
+        .section{
+            width:100vw;
+            min-height:100vh;
+            padding: 120px 80px 60px;
+            opacity:0;
+            transform:translateY(40px);
+            transition: all 0.8s ease;
+        }
+        .section.show{
+            opacity:1;
+            transform:translateY(0);
+        }
+        /*首页强制显示，解决空白*/
+        #home{
+            opacity: 1 !important;
+            transform:translateY(0) !important;
+        }
+        /*首页关闭垂直居中，从上往下排布！！关键修改*/
+        #home.section{
+            display:block;
+        }
+        .container{
+            max-width:1200px;
+            width:100%;
+            margin: 0 auto;
+            display:grid;
+            grid-template-columns: 1fr 1fr;
+            gap:50px;
+            align-items:center;
+        }
+        .home-wrap{
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align:center;
+        }
+        .text-wrap h1{
+            font-size: 48px;
+            margin-bottom:24px;
+            background:linear-gradient(90deg,#00e5ff,#b36bff);
+            -webkit-background-clip:text;
+            color:transparent;
+        }
+        .text-wrap p{
+            font-size:18px;
+            line-height: 2;
+            color:#c5d0ff;
+        }
+        .img-box{
+            border-radius:16px;
+            overflow:hidden;
+            position:relative;
+        }
+        .img-box::before{
+            content:"";
+            position:absolute;
+            top:-100%;
+            left:0;
+            width:100%;
+            height:6px;
+            background:linear-gradient(90deg,#00e5ff,#b36bff);
+            animation:scan 3s linear infinite;
+        }
+        @keyframes scan{
+            0%{top:-10%;}
+            100%{top:110%;}
+        }
+        .img-box img{
+            width:100%;
+            height:auto;
+            display:block;
+            object-fit:cover;
+        }
+
+        /* ============ 环形胶卷轮转：左右向后弯，3D圆圈传送带 ============ */
+        .circle-film-wrap{
+            width: 100%;
+            height: 420px;
+            margin-top: 30px;
+            position: relative;
+            perspective: 900px;
+            overflow: hidden;
+        }
+
+        .circle-film-outer{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .circle-film-ring{
+            position: absolute;
+            width: 480px;
+            height: 480px;
+            left: 50%;
+            top: 50%;
+            margin-left: -240px;
+            margin-top: -240px;
+
+            transform-style: preserve-3d;
+            animation: circleFilmRoll 24s linear infinite;
+        }
+
+        .circle-film-item{
+            position: absolute;
+            width: 220px;
+            height: 125px;
+            left: 50%;
+            top: 50%;
+            margin-left: -110px;
+            margin-top: -62px;
+
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 18px rgba(0,229,255,0.35);
+
+            transform-origin: center center;
+            backface-visibility: hidden;
+        }
+
+        .circle-film-item img{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 8 张图片围成一圈 */
+        .circle-film-item:nth-child(1){ transform: rotateY(0deg) translateZ(380px); }
+        .circle-film-item:nth-child(2){ transform: rotateY(45deg) translateZ(380px); }
+        .circle-film-item:nth-child(3){ transform: rotateY(90deg) translateZ(380px); }
+        .circle-film-item:nth-child(4){ transform: rotateY(135deg) translateZ(380px); }
+        .circle-film-item:nth-child(5){ transform: rotateY(180deg) translateZ(380px); }
+        .circle-film-item:nth-child(6){ transform: rotateY(225deg) translateZ(380px); }
+        .circle-film-item:nth-child(7){ transform: rotateY(270deg) translateZ(380px); }
+        .circle-film-item:nth-child(8){ transform: rotateY(315deg) translateZ(380px); }
+
+        @keyframes circleFilmRoll {
+            0%{
+                transform: rotateY(0deg);
+            }
+            100%{
+                transform: rotateY(-360deg);
+            }
+        }
+
+        /* 左右遮罩，让两边看起来像转入后方 */
+        .circle-mask{
+            position: absolute;
+            top: 0;
+            width: 220px;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .circle-mask.left{
+            left: 0;
+            background: linear-gradient(90deg, #050718 30%, rgba(5,7,24,0.85) 60%, transparent);
+        }
+
+        .circle-mask.right{
+            right: 0;
+            background: linear-gradient(90deg, transparent, rgba(5,7,24,0.85) 40%, #050718 70%);
+        }
+
+        .card-row{
+            display:grid;
+            grid-template-columns: repeat(3,1fr);
+            gap:24px;
+            margin-top:40px;
+        }
+        .tech-card{
+            padding:30px;
+            border:1px solid rgba(64, 224, 255, 0.3);
+            border-radius:12px;
+            background:rgba(255,255,255,0.03);
+            transition: 0.4s;
+        }
+        .tech-card:hover{
+            border-color:#00e5ff;
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.25);
+            transform:translateY(-8px);
+        }
+        /* 联系我们右侧纸飞机动画 */
+        .paper-plane-wrap{
+            position: relative;
+            width: 100%;
+            height: 420px;
+            overflow: hidden;
+        }
+        .paper-plane{
+            position: absolute;
+            left: -100px;
+            bottom: -80px;
+            width: 78px;
+            height: 78px;
+            background: linear-gradient(135deg,#ffffff,#e6f0ff);
+            clip-path: polygon(
+                0% 50%,
+                22% 28%,
+                98% 2%,
+                72% 30%,
+                100% 50%,
+                72% 70%,
+                98% 98%,
+                22% 72%
+            );
+            transform-origin: center center;
+            opacity: 0;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.9))
+                    drop-shadow(0 0 22px rgba(0,229,255,0.6));
+        }
+        .paper-plane.fly{
+            animation: paperPlaneFly 4.5s ease-out forwards;
+        }
+        @keyframes paperPlaneFly{
+            0%{
+                left: -100px;
+                bottom: -80px;
+                transform: rotate(-30deg) scale(1);
+                opacity: 0;
+            }
+            18%{
+                opacity: 1;
+                left: 18%;
+                bottom: 18%;
+                transform: rotate(-30deg) scale(1);
+            }
+            35%{
+                left: 34%;
+                bottom: 30%;
+                transform: rotate(-20deg) scale(1.05);
+            }
+            55%{
+                left: 50%;
+                bottom: 38%;
+                transform: rotate(-10deg) scale(1.1);
+            }
+            100%{
+                left: 85%;
+                bottom: 52%;
+                transform: rotate(35deg) scale(0.18);
+                opacity: 0;
+            }
+        }
+        /* 星星闪光，延时跟随飞机飞走时间 */
+        .star-sparkle{
+            position: absolute;
+            left: 85%;
+            bottom: 52%;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(0,229,255,0.6) 35%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0;
+            transform: scale(0);
+            filter: blur(8px);
+        }
+        .star-sparkle.show{
+            animation: starSparkle 0.6s ease-out forwards;
+            animation-delay: 4.5s;
+        }
+        @keyframes starSparkle{
+            0%{
+                opacity: 0;
+                transform: scale(0);
+            }
+            50%{
+                opacity: 1;
+                transform: scale(1.6);
+            }
+            100%{
+                opacity: 0;
+                transform: scale(2.2);
+            }
+        }
+        /* 联系信息样式 */
+        .contact-info{
+            margin-top: 30px;
+            padding: 24px;
+            border: 1px solid rgba(64,224,255,0.35);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(8px);
+        }
+        .contact-info p{
+            margin-bottom: 18px;
+            font-size: 16px;
+            color: #c5d0ff;
+        }
+        .contact-info p:last-child{
+            margin-bottom: 0;
+        }
+        .contact-icon{
+            margin-right: 12px;
+            color: #00e5ff;
+        }
+        /*适配移动端*/
+        @media(max-width:768px){
+            .right-nav{right:16px;}
+            .container{grid-template-columns: 1fr !important;}
+            .card-row{grid-template-columns: 1fr;}
+            .nav-inner{
+                gap:20px;
+                justify-content:center;
+                padding:18px 10px;
+            }
+            .nav-inner a{
+                font-size:14px;
+            }
+            .paper-plane-wrap{
+                display: none;
+            }
+            .circle-film-item{
+                width:170px;
+                height:95px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 新增顶部导航栏 -->
+    <header class="header-nav">
+        <div class="nav-inner">
+            <a href="#home" class="top-link active-top">首页</a>
+            <a href="#intro" class="top-link">光芯片介绍</a>
+            <a href="#advantage" class="top-link">技术优势</a>
+            <a href="#scene" class="top-link">应用场景</a>
+            <a href="#research" class="top-link">前沿落地</a>
+            <a href="#contact" class="top-link">联系我们</a>
+        </div>
+    </header>
+    <canvas id="particles-canvas"></canvas>
+    <!-- 右侧导航按钮 -->
+    <div class="right-nav">
+        <a href="#home" class="nav-dot active" data-index="0"></a>
+        <a href="#intro" class="nav-dot" data-index="1"></a>
+        <a href="#advantage" class="nav-dot" data-index="2"></a>
+        <a href="#scene" class="nav-dot" data-index="3"></a>
+        <a href="#research" class="nav-dot" data-index="4"></a>
+        <a href="#contact" class="nav-dot" data-index="5"></a>
+    </div>
+    <!--板块1 首页【3D环形胶卷轮转】-->
+    <section id="home" class="section">
+        <div class="home-wrap">
+            <!--第一层：标题文字-->
+            <div class="text-wrap">
+                <h1>光芯片 · 光电时代核心引擎</h1>
+                <p>高速光通信、算力网络、人工智能底层核心元器件，引领下一代数字科技浪潮。</p>
+            </div>
+            <!--第二层：独立分层 3D环形轮转图片，紧贴文字下方-->
+            <div class="circle-film-wrap">
+                <div class="circle-film-outer">
+                    <div class="circle-film-ring">
+                        <div class="circle-film-item"><img src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=600" alt=""></div>
+                        <div class="circle-film-item"><img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=600" alt=""></div>
+                        <div class="circle-film-item"><img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=600" alt=""></div>
+                        <div class="circle-film-item"><img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600" alt=""></div>
+                        <div class="circle-film-item"><img src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=600" alt=""></div>
+                        <div class="circle-film-item"><img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=600" alt=""></div>
+                        <div class="circle-film-item"><img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=600" alt=""></div>
+                        <div class="circle-film-item"><img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600" alt=""></div>
+                    </div>
+                </div>
+                <!-- 左右两侧暗色遮罩，强化向后弯曲 -->
+                <div class="circle-mask left"></div>
+                <div class="circle-mask right"></div>
+            </div>
+        </div>
+    </section>
+    <!--板块2 介绍-->
+    <section id="intro" class="section">
+        <div class="container">
+            <div class="text-wrap">
+                <h1>什么是光芯片</h1>
+                <p>光芯片是光模块最核心的器件，负责实现光电信号互相转换。广泛应用于数据中心、5G通信、云计算、自动驾驶、卫星互联网等领域，是新一代高速信息传输产业的基石。</p>
+            </div>
+            <div class="img-box">
+                <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200" alt="光芯片">
+            </div>
+        </div>
+    </section>
+    <!--板块3 技术优势-->
+    <section id="advantage" class="section">
+        <div class="container">
+            <div class="text-wrap">
+                <h1>核心技术优势</h1>
+                <div class="card-row">
+                    <div class="tech-card">
+                        <h3>超高传输速率</h3>
+                        <p>支持400G‑800G高速信号传输</p>
+                    </div>
+                    <div class="tech-card">
+                        <h3>超低信号损耗</h3>
+                        <p>长距离传输稳定性强</p>
+                    </div>
+                    <div class="tech-card">
+                        <h3>低功耗节能</h3>
+                        <p>大幅降低算力中心能耗</p>
+                    </div>
+                </div>
+            </div>
+            <div class="img-box">
+                <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1200" alt="光芯片技术">
+            </div>
+        </div>
+    </section>
+    <!--板块4 应用场景-->
+    <section id="scene" class="section">
+        <div class="container">
+            <div class="img-box">
+                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1200" alt="应用场景">
+            </div>
+            <div class="text-wrap">
+                <h1>行业应用场景</h1>
+                <p>算力数据中心 · 骨干光纤通信 · 人工智能集群 · 车载激光雷达 · 工业传感 · 太空卫星通信</p>
+            </div>
+        </div>
+    </section>
+    <!--板块5 前沿落地-->
+    <section id="research" class="section">
+        <div class="container">
+            <div class="text-wrap">
+                <h1>前沿落地</h1>
+                <p>目前全球多家科技企业已实现光芯片商业化落地：英伟达、微软、谷歌将高速光芯片大规模部署于AI算力数据中心，支撑800G‑1.6T高速光互联；曦智科技、中兴通讯落地国产硅光交换芯片，建成大规模GPU光互连超节点；富士通、住友电工、光库科技实现薄膜铌酸锂高速调制芯片量产；瑞识科技VCSEL光芯片已经装车应用于自动驾驶激光雷达，光芯片正加速从实验室走向全球规模化商用落地。</p>
+            </div>
+            <div class="img-box">
+                <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1200" alt="实验室研发">
+            </div>
+        </div>
+    </section>
+    <!--板块6 联系我们-->
+    <section id="contact" class="section">
+        <div class="container">
+            <div class="text-wrap">
+                <h1>商务合作 · 技术产品交流</h1>
+                <p>欢迎行业伙伴洽谈光芯片项目合作、技术交流、产品宣传对接等。</p>
+                <div class="contact-info">
+                    <p><i class="contact-icon">📧</i> 邮箱: h101com#gmail.com ( "#"换成"@"可联系 )</p>
+                   <p><i class="contact-icon">🐧</i> QQ: 244052381 </p>
+                    <p><i class="contact-icon">📍</i>  地址: 上海市浦东新区光电科技园区</p>
+                </div>
+            </div>
+            <div class="paper-plane-wrap">
+                <div class="paper-plane"></div>
+                <div class="star-sparkle"></div>
+            </div>
+        </div>
+    </section>
+    <script>
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let w = canvas.width = window.innerWidth;
+        let h = canvas.height = window.innerHeight;
+        let particlesArr=[];
+        class Particle{
+            constructor(){
+                this.x=Math.random()*w;
+                this.y=Math.random()*h;
+                this.size=Math.random()*2+0.5;
+                this.speedX=Math.random()*0.5-0.25;
+                this.speedY=Math.random()*0.5-0.25;
+            }
+            update(){
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if(this.x<0||this.x>w) this.speedX *= -1;
+                if(this.y<0||this.y>h) this.speedY *= -1;
+            }
+            draw(){
+                ctx.fillStyle="rgba(0, 229, 255, 0.7)";
+                ctx.beginPath();
+                ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+                ctx.fill();
+            }
+        }
+        function initParticles(){
+            particlesArr=[];
+            for(let i=0;i<120;i++) particlesArr.push(new Particle());
+        }
+        function animateParticle(){
+            ctx.clearRect(0,0,w,h);
+            for(let i=0;i<particlesArr.length;i++){
+                particlesArr[i].update();
+                particlesArr[i].draw();
+            }
+            requestAnimationFrame(animateParticle);
+        }
+        initParticles();
+        animateParticle();
+        window.addEventListener('resize',()=>{
+            w=canvas.width=innerWidth;
+            h=canvas.height=innerHeight;
+            initParticles();
+        })
+        const sections=document.querySelectorAll('.section');
+        const dots=document.querySelectorAll('.nav-dot');
+        const topLinks=document.querySelectorAll('.top-link');
+        const contactSection = document.getElementById('contact');
+        const paperPlane = document.querySelector('.paper-plane');
+        const starSparkle = document.querySelector('.star-sparkle');
+        let contactAnimated = false;
+        function triggerContactAnimation(){
+            if(!contactAnimated && contactSection.classList.contains('show')){
+                contactAnimated = true;
+                paperPlane.classList.add('fly');
+                starSparkle.classList.add('show');
+            }
+        }
+        window.addEventListener('scroll',()=>{
+            sections.forEach((sec,idx)=>{
+                const top=sec.getBoundingClientRect().top;
+                if(top < window.innerHeight*0.6){
+                    sec.classList.add('show');
+                    dots.forEach(d=>d.classList.remove('active'));
+                    dots[idx].classList.add('active');
+                    topLinks.forEach(link=>link.classList.remove('active-top'));
+                    topLinks[idx].classList.add('active-top');
+                }
+            })
+            triggerContactAnimation();
+        })
+        window.dispatchEvent(new Event('scroll'));
+    </script>
+</body>
+</html>
