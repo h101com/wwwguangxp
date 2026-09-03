@@ -33,8 +33,14 @@
         .header-inner{
             max-width: 1200px;
             margin: 0 auto;
+            display: -webkit-box;
+            display: -ms-flexbox;
             display: flex;
+            -webkit-box-pack: justify;
+            -ms-flex-pack: justify;
             justify-content: space-between;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
             align-items: center;
             padding: 12px 30px;
         }
@@ -42,7 +48,11 @@
         /* 左上角 Logo */
         .logo-mark{
             position: relative;
+            display: -webkit-inline-box;
+            display: -ms-inline-flexbox;
             display: inline-flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
             align-items: center;
             gap: 4px;
             text-decoration: none;
@@ -57,8 +67,14 @@
             position: relative;
             width: 36px;
             height: 36px;
+            display: -webkit-box;
+            display: -ms-flexbox;
             display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
             align-items: center;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
             justify-content: center;
             border-radius: 8px;
             background: linear-gradient(135deg, #ffffff, #f0f7ff);
@@ -134,10 +150,19 @@
             text-shadow: 0 0 8px rgba(0,229,255,0.5);
         }
 
+        /* ==========修复重点==========
+        移除gap，改用margin-left实现间距，完美兼容Edge
+        */
         .nav-inner{
-            display:flex;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: end;
+            -ms-flex-pack: end;
             justify-content: flex-end;
-            gap:45px;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
             padding: 0;
         }
         .nav-inner a{
@@ -146,6 +171,11 @@
             font-size:17px;
             position:relative;
             transition: all 0.4s ease;
+            margin-left: 45px;
+        }
+        /* 第一个导航项清除左边距，避免多出空白 */
+        .nav-inner a:first-child{
+            margin-left: 0;
         }
         /* 鼠标悬浮流光下划线 */
         .nav-inner a::after{
@@ -536,12 +566,11 @@
             .container{grid-template-columns: 1fr !important;}
             .card-row{grid-template-columns: 1fr;}
             .nav-inner{
-                gap: 18px;
                 justify-content:center;
-                padding:0;
             }
             .nav-inner a{
                 font-size: 13px;
+                margin-left: 18px;
             }
             .paper-plane-wrap{
                 display: none;
