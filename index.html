@@ -373,11 +373,12 @@
         /* 联系信息样式 */
         .contact-info{
             margin-top: 30px;
-            padding: 24px;
+            padding: 24px 140px 24px 24px;
             border: 1px solid rgba(64,224,255,0.35);
             border-radius: 12px;
             background: rgba(255,255,255,0.03);
             backdrop-filter: blur(8px);
+            position: relative;
         }
         .contact-info p{
             margin-bottom: 18px;
@@ -390,6 +391,20 @@
         .contact-icon{
             margin-right: 12px;
             color: #00e5ff;
+        }
+        /*右下角二维码*/
+        .qrcode-box{
+            position: absolute;
+            right:20px;
+            bottom:20px;
+            width: 110px;
+            height: 110px;
+        }
+        .qrcode-box img{
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 6px;
         }
         /*适配移动端*/
         @media(max-width:768px){
@@ -410,6 +425,12 @@
             .circle-film-item{
                 width:170px;
                 height:95px;
+            }
+            .qrcode-box{
+                display:none;
+            }
+            .contact-info{
+                padding-right:24px;
             }
         }
     </style>
@@ -529,12 +550,17 @@
     <section id="contact" class="section">
         <div class="container">
             <div class="text-wrap">
-                <h1>商务合作 · 技术产品交流</h1>
+                <h1>商务合作 · 技术咨询</h1>
                 <p>欢迎行业伙伴洽谈光芯片项目合作、技术交流、产品宣传对接等。</p>
                 <div class="contact-info">
-                    <p><i class="contact-icon">📧</i> 邮箱: h101com#gmail.com ( "#"换成"@"可联系 )</p>
-                   <p><i class="contact-icon">🐧</i> QQ: 244052381 </p>
-                    <p><i class="contact-icon">📍</i>  地址: 上海市浦东新区光电科技园区</p>
+                    <p><i class="contact-icon">📧</i>邮箱:  h101com@gmail.com</p>
+                    <p><i class="contact-icon">🐧</i> QQ：4000-8000-11111</p>
+                    <p><i class="contact-icon">📍</i> 地址: 上海市浦东新区光电科技园区</p>
+
+                    <!-- 右下角二维码区域，自行替换src图片路径 -->
+                    <div class="qrcode-box">
+                        <img src="qrcode.jpg" alt="联系二维码">
+                    </div>
                 </div>
             </div>
             <div class="paper-plane-wrap">
