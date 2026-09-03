@@ -1,4 +1,13 @@
 <!DOCTYPE html>
+<!--
+########################################################################
+#                                                                      #
+#                        光芯片 · 前沿光电科技                          #
+#                       版权所有 · 请勿复制源码                         #
+#       未经授权禁止复制、盗用、二次分发本站全部前端页面代码            #
+#                                                                      #
+########################################################################
+-->
 <html lang="zh‑CN">
 <head>
     <meta charset="UTF-8">
@@ -8,6 +17,7 @@
         *{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft Yahei",sans-serif;}
         html{scroll-behavior: smooth;}
         body{background:#050718;color:#fff;overflow-x:hidden;}
+
         /* 顶部导航栏 */
         .header-nav{
             position:fixed;
@@ -19,13 +29,116 @@
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(0, 229, 255, 0.15);
         }
-        .nav-inner{
+
+        .header-inner{
             max-width: 1200px;
             margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 30px;
+        }
+
+        /* 左上角 Logo */
+        .logo-mark{
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        /* “光”字特殊设计 */
+        .logo-light{
+            position: relative;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #ffffff, #f0f7ff);
+            color: #050718;
+            font-size: 24px;
+            font-weight: 900;
+            line-height: 1;
+            overflow: hidden;
+            box-shadow:
+                0 0 8px rgba(255,255,255,0.8),
+                0 0 16px rgba(0,229,255,0.4);
+        }
+
+        /* 白色星光扫过效果 */
+        .logo-light::before{
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -100%;
+            left: -100%;
+            background: linear-gradient(
+                45deg,
+                transparent 40%,
+                rgba(255,255,255,0.8) 50%,
+                transparent 60%
+            );
+            animation: starSweep 3s ease-in-out infinite;
+        }
+
+        @keyframes starSweep{
+            0%{
+                transform: translateX(-30%) translateY(-30%);
+                opacity: 0;
+            }
+            50%{
+                transform: translateX(30%) translateY(30%);
+                opacity: 1;
+            }
+            100%{
+                transform: translateX(30%) translateY(30%);
+                opacity: 0;
+            }
+        }
+
+        /* 星光粒子 */
+        .logo-stars{
+            position: absolute;
+            left: 8px;
+            top: 6px;
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow:
+                12px 8px 0 #fff,
+                18px 4px 0 rgba(255,255,255,0.6),
+                24px 10px 0 rgba(255,255,255,0.4);
+            animation: starTwinkle 2s ease-in-out infinite;
+        }
+
+        @keyframes starTwinkle{
+            0%,100%{
+                opacity: 0.4;
+            }
+            50%{
+                opacity: 1;
+            }
+        }
+
+        .logo-text{
+            color: #fff;
+            text-shadow: 0 0 8px rgba(0,229,255,0.5);
+        }
+
+        .nav-inner{
             display:flex;
             justify-content: flex-end;
             gap:45px;
-            padding: 22px 30px;
+            padding: 0;
         }
         .nav-inner a{
             color:#c5d0ff;
@@ -34,7 +147,7 @@
             position:relative;
             transition: all 0.4s ease;
         }
-        /* 鼠标悬浮酷炫流光下划线 */
+        /* 鼠标悬浮流光下划线 */
         .nav-inner a::after{
             content:"";
             position:absolute;
@@ -408,16 +521,27 @@
         }
         /*适配移动端*/
         @media(max-width:768px){
+            .logo-text{
+                display: none;
+            }
+            .logo-light{
+                width: 32px;
+                height: 32px;
+                font-size: 21px;
+            }
+            .header-inner{
+                padding: 10px 18px;
+            }
             .right-nav{right:16px;}
             .container{grid-template-columns: 1fr !important;}
             .card-row{grid-template-columns: 1fr;}
             .nav-inner{
-                gap:20px;
+                gap: 18px;
                 justify-content:center;
-                padding:18px 10px;
+                padding:0;
             }
             .nav-inner a{
-                font-size:14px;
+                font-size: 13px;
             }
             .paper-plane-wrap{
                 display: none;
@@ -436,15 +560,22 @@
     </style>
 </head>
 <body>
-    <!-- 新增顶部导航栏 -->
+    <!-- 顶部导航栏 -->
     <header class="header-nav">
-        <div class="nav-inner">
-            <a href="#home" class="top-link active-top">首页</a>
-            <a href="#intro" class="top-link">光芯片介绍</a>
-            <a href="#advantage" class="top-link">技术优势</a>
-            <a href="#scene" class="top-link">应用场景</a>
-            <a href="#research" class="top-link">前沿落地</a>
-            <a href="#contact" class="top-link">联系我们</a>
+        <div class="header-inner">
+            <a href="#home" class="logo-mark">
+                <span class="logo-light">光</span>
+                <span class="logo-text">芯片</span>
+                <span class="logo-stars"></span>
+            </a>
+            <div class="nav-inner">
+                <a href="#home" class="top-link active-top">首页</a>
+                <a href="#intro" class="top-link">光芯片介绍</a>
+                <a href="#advantage" class="top-link">技术优势</a>
+                <a href="#scene" class="top-link">应用场景</a>
+                <a href="#research" class="top-link">前沿落地</a>
+                <a href="#contact" class="top-link">联系我们</a>
+            </div>
         </div>
     </header>
     <canvas id="particles-canvas"></canvas>
